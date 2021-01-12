@@ -2,19 +2,19 @@ package com.jpop.userservice.service;
 
 import com.jpop.userservice.model.UserRequest;
 import com.jpop.userservice.model.UserResponse;
-import com.jpop.userservice.model.UserServiceResponse;
 import lombok.NonNull;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface UserService {
-    UserServiceResponse<UserResponse> getUserDetails(@NonNull Integer userId);
+    UserResponse getUserDetails(@NonNull Integer userId);
 
-    UserServiceResponse<Page<UserResponse>> getAllUsers(Pageable pageable);
+    List<UserResponse> getAllUsers(Pageable pageable);
 
-    UserServiceResponse<UserResponse> addUser(@NonNull Integer loggedIn, @NonNull UserRequest userRequest);
+    UserResponse addUser(@NonNull Integer loggedIn, @NonNull UserRequest userRequest);
 
-    UserServiceResponse<UserResponse> updateUser(@NonNull Integer loggedIn, @NonNull Integer userId, UserRequest userRequest);
+    UserResponse updateUser(@NonNull Integer loggedIn, @NonNull Integer userId, UserRequest userRequest);
 
-    UserServiceResponse<Boolean> deleteUser(Integer userId);
+    boolean deleteUser(Integer userId);
 }

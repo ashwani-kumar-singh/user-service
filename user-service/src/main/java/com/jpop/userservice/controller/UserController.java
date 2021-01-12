@@ -1,17 +1,24 @@
 package com.jpop.userservice.controller;
 
-import com.jpop.userservice.entity.User;
 import com.jpop.userservice.model.UserRequest;
 import com.jpop.userservice.model.UserResponse;
-import com.jpop.userservice.model.UserServiceResponse;
 import com.jpop.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -22,41 +29,40 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("users/{user_id}")
-    public ResponseEntity<UserServiceResponse<UserResponse>> getUserDetails(
+    public ResponseEntity<UserResponse> getUserDetails(
             @PathVariable(value = "user_id") Integer userId) {
-        UserServiceResponse<UserResponse> getUserServiceResponse = userService.getUserDetails(userId);
+        UserResponse getUserServiceResponse = userService.getUserDetails(userId);
         return new ResponseEntity<>(getUserServiceResponse, HttpStatus.OK);
     }
 
     @GetMapping("users/")
-    public ResponseEntity<UserServiceResponse<Page<UserResponse>>> getAllUsers(Pageable pageable) {
-        UserServiceResponse<Page<UserResponse>> getAllUserServiceResponse = userService.getAllUsers(pageable);
+    public ResponseEntity<List<UserResponse>> getAllUsers(Pageable pageable) {
+        List<UserResponse> getAllUserServiceResponse = userService.getAllUsers(pageable);
         return new ResponseEntity<>(getAllUserServiceResponse, HttpStatus.OK);
     }
 
     @PostMapping("users")
-    public ResponseEntity<UserServiceResponse<UserResponse>> addUser(
+    public ResponseEntity<UserResponse> addUser(
             @RequestParam(value = "logged_in") Integer loggedIn,
             @RequestBody UserRequest userRequest) {
-        UserServiceResponse<UserResponse> addUserServiceResponse =
+        UserResponse addUserServiceResponse =
                 userService.addUser(loggedIn, userRequest);
         return new ResponseEntity<>(addUserServiceResponse, HttpStatus.OK);
     }
 
     @PutMapping("users/{user_id}")
-    public ResponseEntity<UserServiceResponse<UserResponse>> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable(value = "user_id") Integer userId,
             @RequestParam(value = "logged_in") Integer loggedIn,
             @RequestBody UserRequest userRequest) {
-        UserServiceResponse<UserResponse> updateUserServiceResponse =
+        UserResponse updateUserServiceResponse =
                 userService.updateUser(loggedIn, userId, userRequest);
         return new ResponseEntity<>(updateUserServiceResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("users/{user_id}")
-    public ResponseEntity<UserServiceResponse<Boolean>> deleteUser(
-            @PathVariable(value = "user_id") Integer userId) {
-        UserServiceResponse<Boolean> deleteUserServiceResponse = userService.deleteUser(userId);
+    public ResponseEntity<Boolean> deleteUser(@PathVariable(value = "user_id") Integer userId) {
+        Boolean deleteUserServiceResponse = userService.deleteUser(userId);
         return new ResponseEntity<>(deleteUserServiceResponse, HttpStatus.OK);
     }
 }

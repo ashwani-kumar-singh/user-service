@@ -5,7 +5,6 @@ import com.jpop.userservice.entity.User;
 import com.jpop.userservice.exception.UserServiceBaseException;
 import com.jpop.userservice.model.UserRequest;
 import com.jpop.userservice.model.UserResponse;
-import com.jpop.userservice.model.UserServiceResponse;
 import com.jpop.userservice.repository.UserRepository;
 import com.jpop.userservice.service.UserService;
 import lombok.NonNull;
@@ -13,11 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
@@ -34,40 +30,32 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserServiceResponse<UserResponse> getUserDetails(Integer userId) {
-        UserServiceResponse userServiceResponse = new UserServiceResponse(UserStatusCode.FAILED);
+    public UserResponse getUserDetails(Integer userId) {
         Optional<User> userOptional = userRepository.findById(userId);
+        UserResponse userResponse;
         if(userOptional.isPresent()){
-            UserResponse user = new UserResponse();
-            BeanUtils.copyProperties(userOptional.get() , user);
-            userServiceResponse.setResponseObject(user);
-            userServiceResponse.setStatus(UserStatusCode.SUCCESS);
+            userResponse = new UserResponse();
+            BeanUtils.copyProperties(userOptional.get() , userResponse);
         } else {
             throw new UserServiceBaseException(UserStatusCode.DATABASE_ERROR.getDesc());
         }
-        return userServiceResponse;
+        return userResponse;
     }
 
     @Override
-    public UserServiceResponse<Page<UserResponse>> getAllUsers(Pageable pageable) {
-        UserServiceResponse userServiceResponse = new UserServiceResponse(UserStatusCode.FAILED);
-        Page<User> userPage = userRepository.findAll(pageable);
+    public List<UserResponse> getAllUsers(Pageable pageable) {
+        List<User> userPage = userRepository.findAll();
         List<UserResponse> userResponseList = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(userPage.getContent())){
-            userPage.getContent().forEach( user -> {
-                UserResponse userResponse = new UserResponse();
-                BeanUtils.copyProperties(user , userResponse);
-                userResponseList.add(userResponse);
-            });
-        }
-        userServiceResponse.setResponseObject(new PageImpl<>(userResponseList, pageable, userResponseList.size() ));
-        userServiceResponse.setStatus(UserStatusCode.SUCCESS);
-        return userServiceResponse;
+        userPage.forEach( user -> {
+            UserResponse userResponse = new UserResponse();
+            BeanUtils.copyProperties(user , userResponse);
+            userResponseList.add(userResponse);
+        });
+        return userResponseList;
     }
 
     @Override
-    public UserServiceResponse<UserResponse> addUser(Integer loggedIn, UserRequest userRequest) {
-        UserServiceResponse userServiceResponse = new UserServiceResponse(UserStatusCode.FAILED);
+    public UserResponse addUser(Integer loggedIn, UserRequest userRequest) {
         User user = new User();
         BeanUtils.copyProperties(userRequest, user);
         user.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt()));
@@ -75,33 +63,27 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         UserResponse userResponse = new UserResponse();
         BeanUtils.copyProperties(savedUser, userResponse);
-        userServiceResponse.setResponseObject(userResponse);
-        userServiceResponse.setStatus(UserStatusCode.SUCCESS);
-        return userServiceResponse;
+        return userResponse;
     }
 
     @Override
-    public UserServiceResponse<UserResponse> updateUser(@NonNull Integer loggedIn, Integer userId, UserRequest userRequest) {
-        UserServiceResponse userServiceResponse = new UserServiceResponse(UserStatusCode.FAILED);
+    public UserResponse updateUser(@NonNull Integer loggedIn, Integer userId, UserRequest userRequest) {
         Optional<User> userOptional = userRepository.findById(userId);
+        UserResponse userResponse = new UserResponse();
         if(userOptional.isPresent()){
             User user = userOptional.get();
             BeanUtils.copyProperties(userRequest, user);
             user.setUpdatedBy(loggedIn);
-            userServiceResponse.setResponseObject(userRepository.save(user));
-            userServiceResponse.setStatus(UserStatusCode.SUCCESS);
+            BeanUtils.copyProperties(userRepository.save(user), userResponse);
         } else {
             throw new UserServiceBaseException(UserStatusCode.DATABASE_ERROR.getDesc());
         }
-        return userServiceResponse;
+        return userResponse;
     }
 
     @Override
-    public UserServiceResponse<Boolean> deleteUser(Integer userId) {
-        UserServiceResponse bookResponse = new UserServiceResponse(Boolean.FALSE, UserStatusCode.FAILED);
+    public boolean deleteUser(Integer userId) {
         userRepository.deleteById(userId);
-        bookResponse.setResponseObject(Boolean.TRUE);
-        bookResponse.setStatus(UserStatusCode.SUCCESS);
-        return bookResponse;
+        return true;
     }
 }

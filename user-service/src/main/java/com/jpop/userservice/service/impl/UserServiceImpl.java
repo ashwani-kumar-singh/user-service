@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -43,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers(Pageable pageable) {
+    public List<UserResponse> getAllUsers() {
         List<User> userPage = userRepository.findAll();
         List<UserResponse> userResponseList = new ArrayList<>();
         userPage.forEach( user -> {

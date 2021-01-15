@@ -3,14 +3,13 @@ package com.jpop.userservice.service;
 import com.jpop.userservice.model.UserRequest;
 import com.jpop.userservice.model.UserResponse;
 import lombok.NonNull;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface UserService {
     UserResponse getUserDetails(@NonNull Integer userId);
 
-    List<UserResponse> getAllUsers(Pageable pageable);
+    List<UserResponse> getAllUsers();
 
     UserResponse addUser(@NonNull Integer loggedIn, @NonNull UserRequest userRequest);
 

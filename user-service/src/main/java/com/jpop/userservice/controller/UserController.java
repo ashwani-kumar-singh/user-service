@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.List;
 
 @RestController
 @Slf4j
+@EnableSwagger2
 @RequestMapping("v1/")
 public class UserController {
 
@@ -36,8 +38,8 @@ public class UserController {
     }
 
     @GetMapping("users/")
-    public ResponseEntity<List<UserResponse>> getAllUsers(Pageable pageable) {
-        List<UserResponse> getAllUserServiceResponse = userService.getAllUsers(pageable);
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> getAllUserServiceResponse = userService.getAllUsers();
         return new ResponseEntity<>(getAllUserServiceResponse, HttpStatus.OK);
     }
 

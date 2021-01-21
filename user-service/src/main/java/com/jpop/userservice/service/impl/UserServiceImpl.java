@@ -4,7 +4,7 @@ import com.jpop.userservice.constant.UserStatusCode;
 import com.jpop.userservice.entity.User;
 import com.jpop.userservice.exception.UserServiceBaseException;
 import com.jpop.userservice.model.UserRequest;
-import com.jpop.userservice.model.UserResponse;
+import com.jpop.userservice.model.UserDTO;
 import com.jpop.userservice.repository.UserRepository;
 import com.jpop.userservice.service.UserService;
 import lombok.NonNull;
@@ -13,7 +13,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @Validated
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -29,11 +32,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponse getUserDetails(Integer userId) {
+    public UserDTO getUserDetails(Integer userId) {
+        log.debug("Request to get User details for user id : {}", userId);
         Optional<User> userOptional = userRepository.findById(userId);
-        UserResponse userResponse;
+        UserDTO userResponse;
         if(userOptional.isPresent()){
-            userResponse = new UserResponse();
+            userResponse = new UserDTO();
             BeanUtils.copyProperties(userOptional.get() , userResponse);
         } else {
             throw new UserServiceBaseException(UserStatusCode.DATABASE_ERROR.getDesc());
@@ -42,11 +46,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
+        log.debug("Request to get all User details");
         List<User> userPage = userRepository.findAll();
-        List<UserResponse> userResponseList = new ArrayList<>();
+        List<UserDTO> userResponseList = new ArrayList<>();
         userPage.forEach( user -> {
-            UserResponse userResponse = new UserResponse();
+            UserDTO userResponse = new UserDTO();
             BeanUtils.copyProperties(user , userResponse);
             userResponseList.add(userResponse);
         });
@@ -54,21 +59,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse addUser(Integer loggedIn, UserRequest userRequest) {
+    public UserDTO createUser(Integer loggedIn, UserRequest userRequest) {
+        log.debug("Request to save User details for request: {} by user :{}", userRequest,
+                loggedIn);
         User user = new User();
         BeanUtils.copyProperties(userRequest, user);
         user.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt()));
         user.setCreatedBy(loggedIn);
         User savedUser = userRepository.save(user);
-        UserResponse userResponse = new UserResponse();
+        UserDTO userResponse = new UserDTO();
         BeanUtils.copyProperties(savedUser, userResponse);
         return userResponse;
     }
 
     @Override
-    public UserResponse updateUser(@NonNull Integer loggedIn, Integer userId, UserRequest userRequest) {
+    public UserDTO updateUser(@NonNull Integer loggedIn, Integer userId, UserRequest userRequest) {
+        log.debug("Request to update User details for user id:{} with update request: {} by user :{}",
+                userId, userRequest, loggedIn);
         Optional<User> userOptional = userRepository.findById(userId);
-        UserResponse userResponse = new UserResponse();
+        UserDTO userResponse = new UserDTO();
         if(userOptional.isPresent()){
             User user = userOptional.get();
             BeanUtils.copyProperties(userRequest, user);
@@ -81,8 +90,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUser(Integer userId) {
+    public void deleteUser(Integer userId) {
+        log.debug("Request to delete User details for user id : {}", userId);
         userRepository.deleteById(userId);
-        return true;
     }
 }

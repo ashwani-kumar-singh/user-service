@@ -16,7 +16,7 @@ import lombok.ToString;
 @Builder
 @ToString(doNotUseGetters = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserResponse {
+public class UserDTO {
 
     private  Integer id;
 

@@ -66,7 +66,7 @@ public class UserController {
      *
      * @param userRequest the user request to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
-     *         body the new userRequest, or with status {@code 500 (Internal Server Error)} if the
+     *         body the new UserDTO, or with status {@code 500 (Internal Server Error)} if the
      *         user has already an ID.
      */
     @PostMapping("users")
@@ -84,7 +84,7 @@ public class UserController {
      *
      * @param userRequest the user request to update.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
-     *         body the new userRequest, or with status {@code 500 (Internal Server Error)} if the
+     *         body the new UserDTO, or with status {@code 500 (Internal Server Error)} if the
      *         user does not exist with given id.
      */
     @PutMapping("users/{user_id}")

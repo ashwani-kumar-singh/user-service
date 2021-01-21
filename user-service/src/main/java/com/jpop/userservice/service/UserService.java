@@ -38,7 +38,7 @@ public interface UserService {
      * @param loggedIn i.e. logged in user.
      * @param userId i.e. user id of user details to be updated.
      * @param userRequest i.e. user request.
-     * @return UserDTO i.e. returns newly created user.
+     * @return UserDTO i.e. returns updated user.
      */
     UserDTO updateUser(@NotNull(message = "logged in cannot be null") Integer loggedIn,
                        @NotNull(message = "user id cannot be null") Integer userId,

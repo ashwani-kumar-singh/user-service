@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.validation.Valid;
-import java.net.URISyntaxException;
 import java.util.List;
 
+/**
+ * REST controller for handling user request
+ */
 @RestController
 @Slf4j
 @EnableSwagger2
@@ -90,7 +92,8 @@ public class UserController {
             @PathVariable(value = "user_id") Integer userId,
             @RequestParam(value = "logged_in") Integer loggedIn,
             @Valid @RequestBody UserRequest userRequest) {
-        log.debug("REST request by user :{} to update user for request:{}", loggedIn, userRequest);
+        log.debug("REST request by user: {} to update user: {} for request: {}", loggedIn, userId,
+                userRequest);
         UserDTO updateUserServiceResponse =
                 userService.updateUser(loggedIn, userId, userRequest);
         return new ResponseEntity<>(updateUserServiceResponse, HttpStatus.OK);

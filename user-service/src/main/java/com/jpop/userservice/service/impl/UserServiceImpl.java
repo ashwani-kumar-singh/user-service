@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(Integer loggedIn, UserRequest userRequest) {
-        log.debug("Request to save User details for request: {} by user :{}", userRequest,
-                loggedIn);
+        log.debug("Request to save User details for request: {} by user :{}", userRequest, loggedIn);
         User user = new User();
         BeanUtils.copyProperties(userRequest, user);
         user.setPassword(BCrypt.hashpw(userRequest.getPassword(), BCrypt.gensalt()));
